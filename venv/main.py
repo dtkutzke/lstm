@@ -61,17 +61,21 @@ ds.AugmentData(augmentation_batch_size, train_data_sub, train_labels_sub, val_da
 sequenceLength = 10
 dl.lstmSeqLength = sequenceLength
 ds.ConvertToSequenceDataset(train_data_sub, sequenceLength)
+dl.trainSize = len(train_data_sub)
+
 train_data_sub = ds.FromSubsetsPutTogether(train_data_sub)
 train_labels_sub = ds.FromSubsetsPutTogether(train_labels_sub)
 train_labels_sub = to_categorical(train_labels_sub[::sequenceLength].astype('int'))
 
 ds.ConvertToSequenceDataset(val_data_sub, sequenceLength)
 val_data_sub = ds.FromSubsetsPutTogether(val_data_sub)
+dl.valSize = len(val_data_sub)
 val_labels_sub = ds.FromSubsetsPutTogether(val_labels_sub)
 val_labels_sub = to_categorical(val_labels_sub[::sequenceLength].astype('int'))
 
 ds.ConvertToSequenceDataset(test_data_sub, sequenceLength)
 test_data_sub = ds.FromSubsetsPutTogether(test_data_sub)
+dl.testSize = len(test_data_sub)
 test_labels_sub = ds.FromSubsetsPutTogether(test_labels_sub)
 test_labels_sub = to_categorical(test_labels_sub[::sequenceLength].astype('int'))
 
@@ -96,7 +100,8 @@ historyMlp = History()
 #train_y = train_labels_sub.reshape(train_data_sub.shape[0]*train_data_sub.shape[1], train_labels_sub.shape[1])
 mlp.fit(train_data_sub[:,0,:], train_labels_sub, val_data_sub[:,0,:], val_labels_sub, historyMlp)
 
-N = 10
+N = 20
+dl.accIter = N
 lstmAccuracy = np.zeros([N])
 mlpAccuracy = np.zeros([N])
 for i in range(N):
@@ -134,3 +139,4 @@ plt.savefig(dl.dataDir+"/"+dl.dataString+"_MLP_Loss_vs_epochs.png")
 
 if saveData:
     dl.SaveConfigDetails()
+    dl.SaveResults(np.mean(lstmAccuracy)*100, np.mean(mlpAccuracy)*100)

@@ -15,6 +15,10 @@ class DataLogger:
         self.lstmSeqLength = 0
         self.epochsLstm = 0
         self.epochsMlp = 0
+        self.trainSize = 0
+        self.valSize = 0
+        self.testSize = 0
+        self.accIter = 0
 
     '''Save a small file containing the configuration of this run'''
     def SaveConfigDetails(self):
@@ -29,6 +33,10 @@ class DataLogger:
             f.write("LSTM 'sequence length' from (samples, 'sequence length', features): " + str(self.lstmSeqLength) + "\n")
             f.write("Epochs for LSTM: " + str(self.epochsLstm) + "\n")
             f.write("Epochs for MLP: " + str(self.epochsMlp) + "\n")
+            f.write("Training dataset size: " + str(self.trainSize) + "\n")
+            f.write("Validation dataset size: " + str(self.valSize) + "\n")
+            f.write("Test dataset size: " + str(self.testSize) + "\n")
+            f.write("Accuracy iterations: " + str(self.accIter) + "\n")
             # f.write("Mean pixel bin frequency index (bgr): (" + str(b) + "," + str(g) + "," + str(r) + ")\n")
             # f.write("Figure output boolean: " + str(saveData) + "\n")
 
@@ -54,3 +62,8 @@ class DataLogger:
             print("Creating data directory to save results")
             os.mkdir(self.dataDir)
             return "0" + str(1)
+
+    def SaveResults(self, lstm_results, ml_results):
+       with open(self.dataDir + "/" + self.dataString + "_results.csv", 'a', encoding='utf-8') as f:
+           f.write("LSTM, MLP\n")
+           f.write(str(lstm_results)+","+str(ml_results)+"\n")
