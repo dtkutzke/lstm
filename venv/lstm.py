@@ -17,64 +17,27 @@ import tensorflow as tf
 import scipy.io
 from MaskDataUtils import DataSet, MaskPlotter
 
-# Load the data from the Caltech 101 Silhouettes
-ds = DataSet()
+'''LSTM implementation for evaluation
+Assumes that this is for classification'''
+class lstm:
+    def __init__(self, sequence_length, input_dim, output_length, epochs=5, batch_size=64):
+        self.sequenceLength = sequence_length
+        self.inputDim = input_dim
+        self.outputLength = output_length
+        self.epochs = epochs
+        self.batchSize = batch_size
+        self.model = Sequential()
 
-# Create a subset of augmented data
-# Note that with two class, we can still use binary cross entropy loss in LSTM
-classNamesSub = ['ceiling fan', 'crab', 'crocodile head']
-classNameIndices = ds.GetIndexForClassnames(classNamesSub)
-nOutputsFromLSTM = np.max(classNameIndices)+1
-train_data_sub, train_labels_sub, val_data_sub, val_labels_sub, test_data_sub, test_labels_sub = ds.GetSubsetForClass(classNamesSub)
+    def fit(self, train_x, train_y, val_x, val_y, call_back):
+        self.model.add(LSTM(30, input_shape=(self.sequenceLength, self.inputDim)))
+        #self.model.add(Dropout(0.5))
+        #self.model.add(Dense(50, activation='relu'))
+        self.model.add(Dense(self.outputLength, activation='softmax'))
+        self.model.compile(loss='categorical_crossentropy', optimizer='adam', metrics=['accuracy'])
+        print(self.model.summary())
+        self.model.fit(train_x, train_y, validation_data=(val_x, val_y), epochs=self.epochs, batch_size=self.batchSize, callbacks=[call_back])
 
-# Augment the data
-augmentation_batch_size = 100
-ds.AugmentData(augmentation_batch_size, train_data_sub, train_labels_sub, val_data_sub, val_labels_sub, test_data_sub, test_labels_sub)
-
-# Now we training and test data
-sequenceLength = 10
-
-ds.ConvertToSequenceDataset(train_data_sub, sequenceLength)
-train_data_sub = ds.FromSubsetsPutTogether(train_data_sub)
-train_labels_sub = ds.FromSubsetsPutTogether(train_labels_sub)
-train_labels_sub = to_categorical(train_labels_sub[::sequenceLength].astype('int'))
-
-ds.ConvertToSequenceDataset(val_data_sub, sequenceLength)
-val_data_sub = ds.FromSubsetsPutTogether(val_data_sub)
-val_labels_sub = ds.FromSubsetsPutTogether(val_labels_sub)
-val_labels_sub = to_categorical(val_labels_sub[::sequenceLength].astype('int'))
-
-ds.ConvertToSequenceDataset(test_data_sub, sequenceLength)
-test_data_sub = ds.FromSubsetsPutTogether(test_data_sub)
-test_labels_sub = ds.FromSubsetsPutTogether(test_labels_sub)
-test_labels_sub = to_categorical(test_labels_sub[::sequenceLength].astype('int'))
-
-
-# Now train the LSTM
-embedding_vector_length = 784
-model = Sequential()
-model.add(LSTM(100, input_shape=(sequenceLength, embedding_vector_length)))
-model.add(Dropout(0.5))
-model.add(Dense(100, activation='relu'))
-model.add(Dense(nOutputsFromLSTM, activation='softmax'))
-model.compile(loss='categorical_crossentropy', optimizer='adam', metrics=['accuracy'])
-print(model.summary())
-model.fit(train_data_sub, train_labels_sub, validation_data=(val_data_sub, val_labels_sub), epochs=5, batch_size=64)
-scores = model.evaluate(test_data_sub, test_labels_sub, verbose=0)
-print("Accuracy: %.2f%%" % (scores[1]*100))
-
-# Now we clean up everything
-idx = np.argmax(test_labels_sub[0])
-suptitle = 'Sequence data for ' + ds.classLabels[idx]
-plt.suptitle(suptitle)
-for i in range(sequenceLength):
- # define subplot
-    if sequenceLength < 5:
-        plt.subplot(150+1+i)
-    else:
-        plt.subplot(2, 5, 0+1+i)
-    # generate batch of images
-    # plot raw pixel data
-    plt.imshow(ds.FlatTo3D(train_data_sub[0][i]))
-# show the figure
-plt.show()
+    def predict(self, test_x, test_y):
+        scores = self.model.evaluate(test_x, test_y, verbose=0)
+        print("LSTM classification accuracy: %.2f%%" % (scores[1] * 100))
+        return scores[1]

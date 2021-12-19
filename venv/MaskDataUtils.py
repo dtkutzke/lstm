@@ -112,7 +112,7 @@ class DataSet:
 
     def AugmentData(self, batch_size, train_data, train_labels, val_data=None, val_labels=None, test_data=None, test_labels=None):
 
-        datagen = ImageDataGenerator(width_shift_range=[-5, 5], height_shift_range=[-5, 5], rotation_range=45)
+        datagen = ImageDataGenerator(width_shift_range=[-5, 5], height_shift_range=[5, 5], rotation_range=45)
 
         # Handle the training data first
         for i in range(len(train_data)):
@@ -122,17 +122,17 @@ class DataSet:
             trainLabelsAug = np.ones([samples*batch_size])
             cnt = 0
             for j in range(samples):
-                # Generate 10 random augmentations
-                flat_dim = cl[j].shape
-                #converted = np.zeros([height, width, 3])
-                #for c in range(3):
-                #    converted[:,:,c] = cl[j]
                 converted = self.FlatTo3D(cl[j])
                 it = datagen.flow(np.expand_dims(converted, 0), batch_size=1)
                 for k in range(batch_size):
                     batch = it.next()
                     batch = batch[0]
+                    # Threshold again so that everything is zeros or ones, since transformations change pixel
+                    tmp = batch[:,:,0].flatten('C')
+                    tmp[tmp<0.50] = 0.
+                    tmp[tmp>0.50] = 1.
                     trainDataAug[cnt,:] = batch[:,:,0].flatten('C')
+
                     cnt += 1
 
             trainLabelsAug *= train_labels[i][0]
