@@ -34,4 +34,15 @@ run the examples and retrain.
 	- venv - this is the virtual environment file. I recommend setting
 		 up a virtual environment of your own and placing these
                  files in there
+	- venv/Data - this is the output from the tracker capture.py. Tracking
+                      video will be output here with
+                      "*_Classification_Video.mp4"
+	- Output_Data - contains plots from training LSTM and MLP,
+                        configuration parameter files "*_config.txt",
+                        evaluation results "*_results.csv", example
+                        augmented mask outputs "*_Object_Masks_<classname>.pdf"
+        - Data - contains the dataset. Use caltech101_silhouettes_28_split1.mat
+        - Models - saved models from the training runs. These can be used
+                   for inference, once saved.
+* Model saving can be toggled with the saveModel flag in main.py 
 
