@@ -1,12 +1,14 @@
 #!/bin/bash
 
-pip install virtualenv
+if ! command -v virtualenv &> /dev/null
+then
+    echo "<the_command> could not be found"
+    apt-get install virtual env ~
+fi
 
-cd venv
+virtualenv venv
 
-virtualenv lstm
-
-source lstm/bin/activate
+source venv/bin/activate
 
 pip install keras
 pip install tensorflow
