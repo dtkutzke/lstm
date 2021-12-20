@@ -5,6 +5,17 @@ This project attempts to compare classification accuracy
 for the Caltech 101 Silhouettes shapes using a long short-term
 memory (LSTM) neural network and a single hidden layer perceptron.
 
+## Requirements
+The following are required to run
+```
+keras
+tensorflow
+scikit-learn
+matplotlib
+numpy
+opencv-python
+```
+
 ## Running
 There are two primary files to run. (1) capture.py will run inference using a
 mean-shift object tracker, specifying a region of interest with a click, then
