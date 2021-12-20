@@ -1,4 +1,4 @@
-# LSTM for improved classification accuracy of encoded objects
+# LSTM for Improved Classification of Encoded Objects
 ![Crocodile object classification](https://github.com/dtkutzke/lstm/blob/main/crocodile_output.gif)
 
 ## About
