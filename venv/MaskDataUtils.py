@@ -2,6 +2,7 @@ import scipy.io
 import numpy as np
 import matplotlib.pyplot as plt
 from numpy import expand_dims
+from numpy import random
 import tensorflow as tf
 import cv2
 from keras.preprocessing.image import load_img
@@ -91,20 +92,23 @@ class DataSet:
         testLabelsSubset = []
         cnt = 0
         for i in idx:
-            mask = self.yTrain == i
+            mask = self.yTrain-1 == i
             foundInstances = np.count_nonzero(np.array(mask))
             print('Found ', str(foundInstances), ' instances of class ', class_names[cnt], ' in the train data set')
             trainSubset.append(self.xTrain[mask])
             trainLabelsSubset.append(self.yTrain[mask])
-            mask = self.yVal == i
+            mask = self.yVal-1 == i
             foundInstances = np.count_nonzero(np.array(mask))
             print('Found ', str(foundInstances), ' instances of class ', class_names[cnt], ' in the validation data set')
             valSubset.append(self.xVal[mask])
             valLabelsSubset.append(self.yVal[mask])
-            mask = self.yTest == i
+            mask = self.yTest-1 == i
             foundInstances = np.count_nonzero(np.array(mask))
             print('Found ', str(foundInstances), ' instances of class ', class_names[cnt], ' in the test data set')
             testSubset.append(self.xTest[mask])
+            #fig = plt.figure(50)
+            #plt.imshow(self.FlatTo3D(testSubset[0][0]))
+            #plt.show()
             testLabelsSubset.append(self.yTest[mask])
             cnt += 1
 
@@ -196,16 +200,25 @@ class DataSet:
 
     def MakeSequential(self, input, sequence_size):
         samples, features = input.shape
-        if np.remainder(samples, sequence_size) == 0:
-            reducedSize = int(samples/sequence_size)
-            sequenceData = np.zeros([reducedSize, sequence_size, features])
-            cnt = 0
-            for i in range(reducedSize):
-                for j in range(sequence_size):
-                    sequenceData[i, j, :] = input[cnt]
-                    cnt += 1
+        sequenceData = np.zeros([samples, sequence_size, features])
+        for i in range(samples):
+            indices = np.random.choice(samples, size=sequence_size)
+            for j in range(sequence_size):
+                sequenceData[i, j, :] = input[indices[j]]
+        return sequenceData
+        # if np.remainder(samples, sequence_size) == 0:
+        #     reducedSize = int(samples/sequence_size)
+        #     sequenceData = np.zeros([reducedSize, sequence_size, features])
+        #     cnt = 0
+        #     for i in range(reducedSize):
+        #         for j in range(sequence_size):
+        #             sequenceData[i, j, :] = input[cnt]
+        #             cnt += 1
+        #
+        #     return sequenceData
+        # else:
+        #     # We don't have a divisible set
 
-            return sequenceData
 
     def FromSubsetsPutTogether(self, subsets):
         total_size = 0

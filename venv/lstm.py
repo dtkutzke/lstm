@@ -30,14 +30,21 @@ class lstm:
 
     def fit(self, train_x, train_y, val_x, val_y, call_back):
         self.model.add(LSTM(30, input_shape=(self.sequenceLength, self.inputDim)))
-        #self.model.add(Dropout(0.5))
+        self.model.add(Dropout(0.5))
         #self.model.add(Dense(50, activation='relu'))
         self.model.add(Dense(self.outputLength, activation='softmax'))
         self.model.compile(loss='categorical_crossentropy', optimizer='adam', metrics=['accuracy'])
         print(self.model.summary())
         self.model.fit(train_x, train_y, validation_data=(val_x, val_y), epochs=self.epochs, batch_size=self.batchSize, callbacks=[call_back])
 
-    def predict(self, test_x, test_y):
+    def evaluate(self, test_x, test_y):
         scores = self.model.evaluate(test_x, test_y, verbose=0)
         print("LSTM classification accuracy: %.2f%%" % (scores[1] * 100))
         return scores[1]
+
+    def predict(self, test_instance):
+        prediction = self.model.predict(test_instance)
+        return prediction
+
+    def loadModel(self, path):
+        self.model = keras.models.load_model(path)
