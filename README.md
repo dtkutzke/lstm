@@ -17,7 +17,25 @@ numpy
 opencv-python
 ```
 
+Setting up to run some of the code is fairly simple. 
+1. Make sure virtualenv is installed
+```
+sudo apt-get install virtualenv
+cd lstm
+virtualenv venv/
+source venv/bin/activate
+./install-dep.sh
+```
+
 ## Running
+Make sure you have activated the virtual environment first
+```
+source venv/bin/activate
+```
+Deactivate when done
+```
+deactivate
+```
 There are two primary files to run. (1) capture.py will run inference using a
 mean-shift object tracker, specifying a region of interest with a click, then
 it will perform inference using a pretrained model for both the MLP and the LSTM
