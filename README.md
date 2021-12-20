@@ -57,4 +57,6 @@ run the examples and retrain.
 	- Models - saved models from the training runs. These can be used
                    for inference, once saved.
 * Model saving can be toggled with the saveModel flag in main.py 
+* You can change the Region of Interest (RoI) for the capture.py by changing
+the regionWidth, and regionHeight parameters at the top of the file
 
