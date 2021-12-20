@@ -20,4 +20,18 @@ To retrain, run (2) main.py. This file will retrain and save the new model. You 
 ```
 python main.py
 ```
-Some important parameters are provided that you can change. First, you can the sequence length by changing the sequenceArray in the file. You can also change the classes to train on by changing the classNamesSub array to include or exclude classes. 
+Some important parameters are provided that you can change. First, you can the sequence length by changing the sequenceArray in the file. Second, you can also change the classes to train on by changing the classNamesSub array to include or exclude classes. Third, if you want to change how many augmented images to 
+produce for a given class sample, you can change the 
+augmentation_batch_size parameter. This will augment a single instance
+20 times using the Keras.ImageGenerator with translation in both
+horizontal and vertical directions, and rotation. Fourth, if you wish to change
+(although I don't recommend it) the traing epochs, you can change epochsLstm andepochsMlp.
+
+## General notes
+*You need to have scikit-learn, keras, tensorflow, and opencv installed to 
+run the examples and retrain. 
+*The main files to understand are:
+	- venv - this is the virtual environment file. I recommend setting
+		 up a virtual environment of your own and placing these
+                 files in there
+
