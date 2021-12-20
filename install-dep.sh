@@ -2,13 +2,14 @@
 
 if ! command -v virtualenv &> /dev/null
 then
-    echo "<the_command> could not be found"
+    echo "virtualenv could not be found"
     apt-get install virtual env ~
 fi
 
-virtualenv venv
+virtualenv --no-site-packages venv
 
-source venv/bin/activate
+. venv/bin/activate
+
 
 pip install keras
 pip install tensorflow
