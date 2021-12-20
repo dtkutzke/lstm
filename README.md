@@ -41,8 +41,8 @@ run the examples and retrain.
                         configuration parameter files "*_config.txt",
                         evaluation results "*_results.csv", example
                         augmented mask outputs "*_Object_Masks_<classname>.pdf"
-        - Data - contains the dataset. Use caltech101_silhouettes_28_split1.mat
-        - Models - saved models from the training runs. These can be used
+	- Data - contains the dataset. Use caltech101_silhouettes_28_split1.mat
+	- Models - saved models from the training runs. These can be used
                    for inference, once saved.
 * Model saving can be toggled with the saveModel flag in main.py 
 
