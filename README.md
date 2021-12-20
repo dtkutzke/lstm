@@ -28,9 +28,9 @@ horizontal and vertical directions, and rotation. Fourth, if you wish to change
 (although I don't recommend it) the traing epochs, you can change epochsLstm andepochsMlp.
 
 ## General notes
-*You need to have scikit-learn, keras, tensorflow, and opencv installed to 
+* You need to have scikit-learn, keras, tensorflow, and opencv installed to 
 run the examples and retrain. 
-*The main files to understand are:
+* The main files to understand are:
 	- venv - this is the virtual environment file. I recommend setting
 		 up a virtual environment of your own and placing these
                  files in there
