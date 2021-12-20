@@ -49,9 +49,9 @@ frameRate = 0
 # How many seconds we want to save data (e.g., every 5 s)
 outputF = 5
 # Width of the ROI
-regionWidth = 300
+regionWidth = 400
 # Height of the ROI
-regionHeight = 120
+regionHeight = 250
 # The width of a histogram bin
 histBinWidth = 20
 # What's the minimum value of the histogram
