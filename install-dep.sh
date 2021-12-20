@@ -1,5 +1,7 @@
 #!/bin/bash
 
+sudo pip install virtualenv
+
 cd venv
 
 virtualenv lstm
