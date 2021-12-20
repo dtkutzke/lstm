@@ -29,12 +29,13 @@ imageHeight, imageWidth, planes = image.shape
 lstm_ = lstm(10, 784, 31)
 mlp_ = mlp(784, 31)
 sequenceLength = 10
-sequenceSampleRate = 5
+sequenceSampleRate = 2
 sequence = np.zeros([sequenceLength, 784])
 tCnt = 0
 ds = DataSet()
 lstmLastPredicted = 0
 lstmyLast = 0
+imFrames = []
 '''(Demetri) Global variables for mean shift
 Note that these can all be changed'''
 # Where to place any output data
@@ -48,9 +49,9 @@ frameRate = 0
 # How many seconds we want to save data (e.g., every 5 s)
 outputF = 5
 # Width of the ROI
-regionWidth = 100
+regionWidth = 300
 # Height of the ROI
-regionHeight = 100
+regionHeight = 120
 # The width of a histogram bin
 histBinWidth = 20
 # What's the minimum value of the histogram
@@ -233,6 +234,13 @@ def GetDataRunCount():
 
 '''Saves all the tracked histograms and plots and saves the region of interest'''
 def PerformCleanup():
+    global imageHeight, imageWidth
+    out = cv2.VideoWriter(dataDir+"/"+dataString+"_Classification_Video.mp4",
+                          cv2.VideoWriter_fourcc(*'mp4v'), 30.0, (imageWidth,imageHeight))
+    for i in range(len(imFrames)):
+        out.write(imFrames[i])
+    out.release()
+
     # Plot and save all histograms
     for h, f, d in zip(hisFeatureList, hisFileLabelList, hellingerDistList):
         PlotAndSaveHistogram(hisFeature, h, f, d)
@@ -364,7 +372,7 @@ def doTracking():
         # Resize roi to be a 28x28 dimension
         encoded = PseudoEncoder(newRoi)
         ynew = mlp_.predict(np.array([encoded]))
-        mostLikely = np.argmax(ynew)
+        mostLikely = np.argmax(ynew)-1
         if ds.classLabels[mostLikely] == 'crocodile':
             cv2.putText(image,"MLP predicted: Crocodile"+" | Probability = %0.2f " % np.max(ynew),
                 org=(50,50), fontFace=cv2.FONT_HERSHEY_SIMPLEX, color=(0,255,0),
@@ -379,7 +387,7 @@ def doTracking():
             if tCnt == sequenceLength-1:
                 tCnt = 0
                 ynew = lstm_.predict(np.array([sequence]))
-                mostLikely = np.argmax(ynew)
+                mostLikely = np.argmax(ynew)-1
                 lstmLastPredicted = mostLikely
                 lstmyLast = ynew
             else:
@@ -470,7 +478,7 @@ def doTracking():
         #print("New location", xLast, yLast)
 
         cv2.rectangle(image, (xLast - rW, yLast - rH), (xLast + rW, yLast + rH), (255, 0, 0), 2)
-
+        imFrames.append(image)
 
 
 
@@ -489,7 +497,7 @@ def mapClicks(x, y, curWidth, curHeight):
 
 
 def captureVideo(src):
-    global image, isTracking, trackedImage, frameRate
+    global image, isTracking, trackedImage, frameRate, imageHeight, imageWidth
     cap = cv2.VideoCapture(src)
     if cap.isOpened() and src == '0':
         ret = cap.set(3, 640) and cap.set(4, 480)
@@ -497,6 +505,10 @@ def captureVideo(src):
             print('Cannot set frame properties, returning')
             return
     else:
+        ret, im = cap.read()
+        imageHeight, imageWidth, _ = im.shape
+        image = np.zeros((imageHeight, imageWidth, 3), np.uint8)
+        trackedImage = np.zeros((imageHeight, imageWidth, 3), np.uint8)
         frate = cap.get(cv2.CAP_PROP_FPS)
         frameRate = frate
         print(frate, ' is the framerate')
